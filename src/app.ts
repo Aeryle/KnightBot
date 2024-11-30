@@ -13,7 +13,7 @@ var DemoAppVersion = AppInfo && AppInfo["AppVersion"] ? AppInfo["AppVersion"] : 
 var DemoRegion = AppInfo && AppInfo.Region;
 
 export class DemoLoadBalancing extends Photon.LoadBalancing.LoadBalancingClient {
-    logger = new Photon.Logger("Demo:");
+    logger = new Photon.Logger();
 
     public static instance: DemoLoadBalancing;
     public static totalPlayers = -1;
@@ -32,7 +32,6 @@ export class DemoLoadBalancing extends Photon.LoadBalancing.LoadBalancingClient 
         DemoLoadBalancing.instance = this;
 
         this.output(this.logger.format("Init", this.getNameServerAddress(), DemoAppId, DemoAppVersion));
-        this.logger.info("Init", this.getNameServerAddress(), DemoAppId, DemoAppVersion);
         this.setLogLevel(Photon.LogLevel.INFO);
         
     }
@@ -85,7 +84,7 @@ export class DemoLoadBalancing extends Photon.LoadBalancing.LoadBalancingClient 
         }
         else if (roomsAdded.length > 1)
         {
-            this.output("WARNING: More than 1 room is open. This should not happen");
+            this.output("[Warning] More than 1 room is open. This should not happen");
             // TO-DO: Keep the queue with the more players
             // Find the room with the most players and set it as the current queue
             var roomWithMostPlayers = roomsAdded.reduce((prev, current) => (prev.playerCount > current.playerCount) ? prev : current);
@@ -96,24 +95,26 @@ export class DemoLoadBalancing extends Photon.LoadBalancing.LoadBalancingClient 
                 DemoLoadBalancing.potentialCurrentQueues.push(room.name);
             });
         }
-
-        this.output("Total rooms: " + rooms.length);
     }
     onAppStats(errorCode: number, errorMsg: string, stats: any) {
         var totalGames = parseInt(stats.gameCount);
         var totalPlayers =  parseInt(stats.peerCount) + parseInt(stats.masterPeerCount) - 1; // -1 because we are not a real player
         var playersAfk = parseInt(stats.masterPeerCount) - 1; // -1 because we are not a real player
         var playersInGameOrQueue = parseInt(stats.peerCount); // -1 because we are not a real player
+        var playersInQueue = DemoLoadBalancing.countOfPlayersInCurrentQueue;
+        var playersInGame = playersInGameOrQueue - playersInQueue;
 
         DemoLoadBalancing.totalPlayers = totalPlayers;
         DemoLoadBalancing.playersInGameOrQueue = playersInGameOrQueue;
         DemoLoadBalancing.playersAfk = playersAfk;
         DemoLoadBalancing.totalGames = totalGames;
 
-        this.output("[+++] Players in queue/game: " + DemoLoadBalancing.playersInGameOrQueue);
-        this.output("[+++] Players afk: " + DemoLoadBalancing.playersAfk);
-        this.output("[+++] Total players: " + DemoLoadBalancing.totalPlayers);
-        this.output("[+++] Total games: " + DemoLoadBalancing.totalGames);
+        this.output("[Players]:"
+                    + "\n\t- In Game: " + playersInGame
+                    + "\n\t- In Queue: " + playersInQueue
+                    + "\n\t- AFK: " + playersAfk
+                    + "\n\t- Total: " + totalPlayers);
+        this.output("[Games]: " + totalGames);
     }
 
     output(str: string, color?: string) {
@@ -127,7 +128,7 @@ export class DemoLoadBalancing extends Photon.LoadBalancing.LoadBalancingClient 
         DemoLoadBalancing.currentQueueRoomName = room.name;
         DemoLoadBalancing.countOfPlayersInCurrentQueue = room.playerCount;
         DemoLoadBalancing.currentQueueTimeStart = Date.now();
-        this.output("[Queue] New room (=new CurrentQueue): " + room.name);
+        this.output("[Queue] New queue: " + room.name);
     }
     
     resolveQueueConflict(updatedRooms: Photon.LoadBalancing.Room[])
@@ -172,7 +173,6 @@ export class PhotonRunner
         Photon.setOnLoad(() =>
             {
                 new DemoLoadBalancing().start();
-                // setInterval(() => {}, 1000); // keep alive
             }
         );
     }

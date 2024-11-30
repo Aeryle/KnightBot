@@ -2,6 +2,7 @@
   "scripts": {
     "start": "node dist/bot.js",
     "dev": "ts-node src/bot.ts",
+    "update": "ts-node src/update.ts",
     "build": "tsc"
   },
   "devDependencies": {
