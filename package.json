@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "start": "node dist/bot.js",
+    "dev": "ts-node src/bot.ts",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "latest",
+    "ts-node": "latest",
+    "@types/node": "latest",
+    "@types/express": "latest"
+  },
+  "dependencies": {
+    "@discordjs/rest": "^2.4.0",
+    "@types/node": "^22.10.1",
+    "discord-api-types": "^0.37.110",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  }
+}
