@@ -1,10 +1,8 @@
-import { Client, GatewayIntentBits, Interaction } from 'discord.js';
+import { Client, DiscordAPIError, GatewayIntentBits, Interaction } from 'discord.js';
 import { DemoLoadBalancing, PhotonRunner, MAX_PLAYERS } from './app';
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
-    console.log("Bot token:" + process.env.BOT_TOKEN);
-    console.log("Bot client ID:" + process.env.BOT_CLIENT_ID);
   }
 
 if (!process.env.BOT_TOKEN || !process.env.BOT_CLIENT_ID) {
@@ -57,7 +55,23 @@ client.on('interactionCreate', async (interaction: Interaction) => {
             var message = "No active queue.";
         }
         
-        await interaction.reply(message);
+        // We have 3 seconds to respond
+        // If we take too long, catch the 'Unknown interaction' error.
+        try
+        {
+            await interaction.reply(message);
+        }
+        catch(e)
+        {
+            if (e instanceof DiscordAPIError)
+            {
+                console.warn("Took too long to respond (> 3 seconds). Can't respond anymore to the slash command");
+            }
+            else
+            {
+                console.error("Couldn't reply to interaction. Unknown error: + e");
+            }
+        }
     }
 });
 

@@ -5,10 +5,9 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "typescript": "latest",
-    "ts-node": "latest",
-    "@types/node": "latest",
-    "@types/express": "latest"
+    "@types/node": "^22.10.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
   },
   "dependencies": {
     "@discordjs/rest": "^2.4.0",

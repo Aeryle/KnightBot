@@ -1,9 +1,10 @@
+// @ts-nocheck
 /// <reference path="Photon/photon.d.ts"/>
 // import WebSocket from 'ws'; // DO NOT WORK
 var WebSocket = require('ws'); // FROM NATIVE NODE.JS
 import { managerToFetchingStrategyOptions } from 'discord.js';
 import { AppInfo } from './cloud-app-info';
-import { Photon } from './Photon/photon.js';
+import { Photon } from './photon'; 
 
 // fetching app info global variable while in global context
 var DemoWss = false;
