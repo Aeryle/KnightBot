@@ -71,7 +71,7 @@ async function respondSlash(interaction: any, response: string)
         }
         else
         {
-            console.error("Couldn't reply to interaction. Unknown error:" + e);
+            console.error("Couldn't reply to interaction. Unknown error: + e");
         }
     }
 }
@@ -112,9 +112,3 @@ function handlePlayers()
 
 // Login to Discord
 client.login(process.env.BOT_TOKEN);
-
-// Invite:
-// https://discord.com/oauth2/authorize?client_id=1312025256936083507&permissions=2147483648&integration_type=0&scope=bot
-
-// Deployment:
-// https://railway.app/project/92b2c5d9-d055-4a9a-8bc7-509e41808700

@@ -44,8 +44,6 @@ export class DemoLoadBalancing extends Photon.LoadBalancing.LoadBalancingClient 
     }
     onError(errorCode: number, errorMsg: string) {
         this.output("Error " + errorCode + ": " + errorMsg);
-        // Throw error to make sure the bot restarts
-        throw new Error("Photon error: " + errorMsg + "Waiting for the bot to restart...");
     }
     onEvent(code: number, content: any, actorNr: number) {
     }

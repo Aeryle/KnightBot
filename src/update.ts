@@ -16,7 +16,7 @@ const commands = [
         .setDescription('Display the number of active players. AFK players are not included.'),
     new SlashCommandBuilder()
         .setName('queue')
-        .setDescription('Display the number of players in the current queue.'),
+        .setDescription('Display the number of players in the current queue and its starting countdown.'),
 ].map(command => command.toJSON());
 
 // Register the slash commands
