@@ -104,7 +104,7 @@ export class DemoLoadBalancing extends Photon.LoadBalancing.LoadBalancingClient 
                 if (DemoLoadBalancing.currentQueueRoomName == room.name)
                 {
                     DemoLoadBalancing.currentQueueRoomName = "";
-                    DemoLoadBalancing.countOfPlayersInCurrentQueue = -1;
+                    DemoLoadBalancing.countOfPlayersInCurrentQueue = 0;
                     DemoLoadBalancing.currentQueueTimeStart = -1;
                     this.output("[Queue] Current queue was cancelled by the only present player.");
                 }
