@@ -60,10 +60,10 @@ export class DemoLoadBalancing extends Photon.LoadBalancing.LoadBalancingClient 
     onRoomListUpdate(rooms: Photon.LoadBalancing.Room[], roomsUpdated: Photon.LoadBalancing.Room[], roomsAdded: Photon.LoadBalancing.Room[], roomsRemoved: Photon.LoadBalancing.Room[]) {
         // this.logger.info("Demo: onRoomListUpdate", rooms, roomsUpdated, roomsAdded, roomsRemoved);
         // this.output("Demo: Rooms update: " + roomsUpdated.length + " updated, " + roomsAdded.length + " added, " + roomsRemoved.length + " removed");
-        this.onRoomListHandler(rooms, roomsAdded);
+        this.onRoomListHandler(rooms, roomsAdded, roomsRemoved);
     }
 
-    onRoomListHandler(rooms: Photon.LoadBalancing.Room[], roomsAdded: Photon.LoadBalancing.Room[]) {
+    onRoomListHandler(rooms: Photon.LoadBalancing.Room[], roomsAdded: Photon.LoadBalancing.Room[], roomsRemoved: Photon.LoadBalancing.Room[]) {
         for (var i = 0; i < rooms.length;++i){
             var r = rooms[i];
             // We init the queue with the first open room we find
