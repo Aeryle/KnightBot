@@ -83,6 +83,10 @@ function handleQueue()
     {
         return "Couldn't fetch queue information. Please retry later.";
     }
+    else if (playersInQueue == 0)
+    {
+        return "No active queue.";
+    }
 
     var remainingQueueTime = Math.ceil(DemoLoadBalancing.getRemainingQueueTime());
     var waitingFor = `**${playersInQueue}/${MAX_PLAYERS}** players.`;

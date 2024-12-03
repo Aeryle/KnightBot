@@ -105,8 +105,8 @@ function handleQueue()
 
 function handlePlayers()
 {
-    var totalPlayers = DemoLoadBalancing.totalPlayers;
-    var message = `Active players: **${totalPlayers}**`;
+    var activePlayers = DemoLoadBalancing.playersInGameOrQueue;
+    var message = `Active players: **${activePlayers}**`;
     return message;
 }
 

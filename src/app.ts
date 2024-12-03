@@ -97,6 +97,19 @@ export class DemoLoadBalancing extends Photon.LoadBalancing.LoadBalancingClient 
                 DemoLoadBalancing.potentialCurrentQueues.push(room.name);
             });
         }
+
+        if (roomsRemoved.length > 0)
+        {
+            roomsRemoved.forEach(room => {
+                if (DemoLoadBalancing.currentQueueRoomName == room.name)
+                {
+                    DemoLoadBalancing.currentQueueRoomName = "";
+                    DemoLoadBalancing.countOfPlayersInCurrentQueue = -1;
+                    DemoLoadBalancing.currentQueueTimeStart = -1;
+                    this.output("[Queue] Current queue was cancelled by the only present player.");
+                }
+            });
+        }
     }
     onAppStats(errorCode: number, errorMsg: string, stats: any) {
         var totalGames = parseInt(stats.gameCount);
