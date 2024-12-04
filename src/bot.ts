@@ -87,17 +87,18 @@ function handleQueue()
     var remainingQueueTime = Math.ceil(DemoLoadBalancing.getRemainingQueueTime());
     var waitingFor = `**${playersInQueue}/${MAX_PLAYERS}** players.`;
     var message = "Something went wrong...";
-    if (remainingQueueTime > 0)
+
+    if (playersInQueue == 0 || remainingQueueTime <= -15)
+    {
+        var message = "No active queue.";
+    }
+    else if (remainingQueueTime > 0)
     {
         message = `${waitingFor} Starting in **${remainingQueueTime} seconds**...`;
     }
-    if (remainingQueueTime <= 0 && remainingQueueTime >= - 15)
+    else if (remainingQueueTime <= 0 && remainingQueueTime >= - 15)
     {
         message = `${waitingFor} Starting now...`;
-    }
-    else if (remainingQueueTime <= -15)
-    {
-        var message = "No active queue.";
     }
 
     return message;
