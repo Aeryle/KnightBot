@@ -123,13 +123,15 @@ export class DemoLoadBalancing extends Photon.LoadBalancing.LoadBalancingClient 
         DemoLoadBalancing.playersInGameOrQueue = playersInGameOrQueue;
         DemoLoadBalancing.playersAfk = playersAfk;
         DemoLoadBalancing.totalGames = totalGames;
-
+        
+        /* Remove these logs to reduce memory usage
         this.output("[Players]:"
                     + "\n\t- In Game: " + playersInGame
                     + "\n\t- In Queue: " + playersInQueue
                     + "\n\t- AFK: " + playersAfk
                     + "\n\t- Total: " + totalPlayers);
         this.output("[Games]: " + totalGames);
+        */
     }
 
     output(str: string, color?: string) {
