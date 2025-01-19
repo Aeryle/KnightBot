@@ -3,12 +3,19 @@ import { DemoLoadBalancing, PhotonRunner, MAX_PLAYERS } from './app';
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
+
+    if (!process.env.DEV_BOT_TOKEN || !process.env.DEV_BOT_CLIENT_ID) {
+        console.error('(DEV) Invalid bot token or client ID from ENV. Exiting...');
+        process.exit(1);
+    }
   }
 
 if (!process.env.BOT_TOKEN || !process.env.BOT_CLIENT_ID) {
     console.error('Invalid bot token or client ID from ENV. Exiting...');
     process.exit(1);
 }
+
+const BOT_TOKEN = process.env.NODE_ENV === 'production' ? process.env.BOT_TOKEN || '' : process.env.DEV_BOT_TOKEN || '';
 
 const cmdPrefix = '!';
 const client = new Client({
@@ -34,6 +41,10 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         let message = await handleQueue();
         await respondSlash(interaction, message);
     }
+    else if (commandName === 'eu') {
+        let message = await handleEUMigratedPlayers();
+        await respondSlash(interaction, message);
+    }
 });
 
 // Message commands (prefix: !)
@@ -49,8 +60,13 @@ client.on('messageCreate', async (message: Message) => {
     if (command === 'players') {
         let response = handlePlayers();
         await message.reply(response);
-    } else if (command === 'queue') {
+    }
+    else if (command === 'queue') {
         let response = handleQueue();
+        await message.reply(response);
+    }
+    else if (command === 'eu') {
+        let response = await handleEUMigratedPlayers();
         await message.reply(response);
     }
 });
@@ -111,8 +127,34 @@ function handlePlayers()
     return message;
 }
 
+async function handleEUMigratedPlayers()
+{
+    const URL = "http://129.80.252.248:5000/migration";
+    const response = await fetch(URL);
+
+    var message = "";
+    if (!response.ok) {
+        message = "Something went wrong...";
+        console.error(`Error fetching ${URL}. Status: ` + response.status);
+        return message;
+    }
+
+    const data = await response.json();
+    // Ensure data contains 'migrated' and 'total' keys
+    if (!data.migrated || !data.total) {
+        message = "Something went wrong...";
+        console.error(`Invalid data received from ${URL}. Data: ` + JSON.stringify(data));
+        return message;
+    }
+
+    // Percent (as integer)
+    var percent = Math.round((data.migrated / data.total) * 100);
+    message = `Migrated players: **${data.migrated}/${data.total}** (${percent} %)`;
+    return message;
+}
+
 // Login to Discord
-client.login(process.env.BOT_TOKEN);
+client.login(BOT_TOKEN);
 
 // Invite:
 // https://discord.com/oauth2/authorize?client_id=1312025256936083507&permissions=2147483648&integration_type=0&scope=bot
