@@ -25,7 +25,7 @@ const client = new Client({
 client.once('ready', () => {
     console.log(`Logged in as ${client.user?.tag}!`);
 
-    // PhotonRunner.run();
+    PhotonRunner.run();
 });
 
 // Slash commands
