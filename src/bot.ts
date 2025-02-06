@@ -35,17 +35,8 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     const { commandName } = interaction;
 
     if (commandName === 'players') {
-        // if message is from user 'water' then return a special message
-        if (interaction.user.id === '179031201057603586') {
-            let message = "I think you know the name because he posted a screenshot and didn't even play today and only died like 2 or 3 times yesterday but OK :nerd::point_up:";
-            await respondSlash(interaction, message);
-            return;
-        }
-        else
-        {
-            let message = await handlePlayers();
-            await respondSlash(interaction, message);
-        }
+        let message = await handlePlayers();
+        await respondSlash(interaction, message);
     }
     else if (commandName === 'queue') {
         let message = await handleQueue();
