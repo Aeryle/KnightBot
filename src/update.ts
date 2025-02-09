@@ -23,10 +23,10 @@ console.log('NODE_ENV', process.env.NODE_ENV, 'Updating for bot with client ID:'
 const commands = [
     new SlashCommandBuilder()
         .setName('players')
-        .setDescription('Display the number of active players. AFK players are not included.'),
+        .setDescription('Display the number of active players (NA). AFK players are not included.'),
     new SlashCommandBuilder()
         .setName('queue')
-        .setDescription('Display the number of players in the current queue and its starting countdown.'),
+        .setDescription('Display the number of players in the current queue (NA) and its starting countdown.'),
     new SlashCommandBuilder()
         .setName('eu')
         .setDescription('Display the (approximate) number of players who migrated from EU to NA after seeing KnightBot.'),
