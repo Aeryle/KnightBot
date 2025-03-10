@@ -34,12 +34,10 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
     const { commandName } = interaction;
 
-    if (commandName === 'players') {
-        let message = await handlePlayers();
-        await respondSlash(interaction, message);
-    }
-    else if (commandName === 'queue') {
-        let message = await handleQueue();
+    if (commandName === 'queue') {
+        let response1 = handlePlayers();
+        let response2 = handleQueue();
+        let message = response1 + "\n" + response2;
         await respondSlash(interaction, message);
     }
     else if (commandName === 'eu') {
@@ -58,13 +56,10 @@ client.on('messageCreate', async (message: Message) => {
     const command = args.shift()?.toLowerCase();
 
     // Handle commands
-    if (command === 'players') {
-        let response = handlePlayers();
-        await message.reply(response);
-    }
-    else if (command === 'queue') {
-        let response = handleQueue();
-        await message.reply(response);
+    if (command === 'queue') {
+        let response1 = handlePlayers();
+        let response2 = handleQueue();
+        await message.reply(response1 + "\n" + response2);
     }
     else if (command === 'eu') {
         let response = await handleEUMigratedPlayers();
@@ -98,12 +93,12 @@ function handleQueue()
     var playersInQueue = DemoLoadBalancing.countOfPlayersInCurrentQueue;
     if (playersInQueue == -1)
     {
-        return "Couldn't fetch queue information. Please retry later.";
+        return "_Couldn't fetch queue information. Please retry later._";
     }
 
     var remainingQueueTime = Math.ceil(DemoLoadBalancing.getRemainingQueueTime());
     var waitingFor = `**${playersInQueue}/${MAX_PLAYERS}** players.`;
-    var message = "Something went wrong...";
+    var message = "_Something went wrong..._";
 
     if (playersInQueue == 0 || remainingQueueTime <= -15)
     {
@@ -136,7 +131,7 @@ async function handleEUMigratedPlayers()
 
     var message = "";
     if (!response.ok) {
-        message = "Something went wrong...";
+        message = "_Something went wrong..._";
         console.error(`Error fetching ${URL}. Status: ` + response.status);
         return message;
     }
@@ -144,7 +139,7 @@ async function handleEUMigratedPlayers()
     const data = await response.json();
     // Ensure data contains 'migrated' and 'total' keys
     if (!data.migrated || !data.total) {
-        message = "Something went wrong...";
+        message = "_Something went wrong..._";
         console.error(`Invalid data received from ${URL}. Data: ` + JSON.stringify(data));
         return message;
     }
