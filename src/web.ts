@@ -1,7 +1,7 @@
 import { parentPort, isMainThread } from 'worker_threads';
 import http from 'http';
 
-const PORT = 8000;
+const PORT = 10000;
 
 if (isMainThread) {
   throw new Error('This script should only be run as a worker');

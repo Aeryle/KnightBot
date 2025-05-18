@@ -157,7 +157,7 @@ async function handleEUMigratedPlayers()
 const worker = new Worker(path.resolve(__dirname, './web.js'));
 
 worker.on('online', () => {
-  console.log('Server is running in the background on port 8000');
+  console.log('Server is running in the background on port 10000');
 });
 
 worker.on('exit', (code) => {
