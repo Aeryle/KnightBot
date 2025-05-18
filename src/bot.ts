@@ -1,5 +1,7 @@
 import { Client, Message, DiscordAPIError, Interaction  } from 'discord.js';
 import { DemoLoadBalancing, PhotonRunner, MAX_PLAYERS } from './app';
+import { Worker } from 'worker_threads';
+import path from 'path';
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
@@ -150,6 +152,18 @@ async function handleEUMigratedPlayers()
     return message;
 }
 
+// Add necessary empty web service for 'Render' deployment
+// Start the HTTP server in a separate worker thread
+const worker = new Worker(path.resolve(__dirname, './web.js'));
+
+worker.on('online', () => {
+  console.log('Server is running in the background on port 8000');
+});
+
+worker.on('exit', (code) => {
+  console.log(`Worker exited with code ${code}`);
+});
+
 // Login to Discord
 client.login(BOT_TOKEN);
 
@@ -158,3 +172,4 @@ client.login(BOT_TOKEN);
 
 // Deployment:
 // https://railway.app/project/92b2c5d9-d055-4a9a-8bc7-509e41808700
+// https://dashboard.render.com/web/srv-d0kroebe5dus73c1q6cg/deploys/dep-d0kroeje5dus73c1q6o0
