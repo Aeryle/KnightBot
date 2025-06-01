@@ -1,7 +1,13 @@
 const http = require('http');
 
+if (!process.env.RENDER_DEPLOY_URL)
+{
+    console.error('Invalid RENDER_DEPLOY_URL from ENV. Exiting...');
+    process.exit(1);
+}
+
 function queryServer() {
-  http.get('http://127.0.0.1:10000/', (res) => {
+  http.get(process.env.RENDER_DEPLOY_URL, (res) => {
     let data = '';
 
     res.on('data', (chunk) => data += chunk);
