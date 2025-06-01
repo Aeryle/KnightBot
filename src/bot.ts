@@ -1,7 +1,9 @@
-import { Client, Message, DiscordAPIError, Interaction  } from 'discord.js';
+import { Client, Message, DiscordAPIError, Interaction, TextChannel  } from 'discord.js';
 import { DemoLoadBalancing, PhotonRunner, MAX_PLAYERS } from './app';
 import { Worker } from 'worker_threads';
 import path from 'path';
+
+const CHANNEL_ID = "1311233429572161556";
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
@@ -24,8 +26,12 @@ const client = new Client({
     intents: ['GuildMessages', 'MessageContent', 'Guilds'],
 });
 
-client.once('ready', () => {
+client.once('ready', async () => {
     console.log(`Logged in as ${client.user?.tag}!`);
+
+    // Troll ThirdOne
+    // const channel = await client.channels.fetch(CHANNEL_ID);
+    // (channel as TextChannel).send('Is there a way to mute ThirdOne 🤓☝️');
 
     PhotonRunner.run();
 });
@@ -162,6 +168,18 @@ worker.on('online', () => {
 
 worker.on('exit', (code) => {
   console.log(`Worker exited with code ${code}`);
+});
+
+// Render requires traffic at least every 15mn or the service will go to sleep
+// Start the background polling worker to keep Knightbot service running on Render
+const backgroundWorker = new Worker(path.resolve(__dirname, './polling.js'));
+
+backgroundWorker.on('online', () => {
+  console.log('Background polling worker started to query every 5 minutes');
+});
+
+backgroundWorker.on('exit', (code) => {
+  console.log(`Background worker exited with code ${code}`);
 });
 
 // Login to Discord
