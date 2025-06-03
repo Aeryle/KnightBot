@@ -8,14 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const app_1 = require("./app");
-const worker_threads_1 = require("worker_threads");
-const path_1 = __importDefault(require("path"));
 const CHANNEL_ID = "1311233429572161556";
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
@@ -141,24 +136,6 @@ function handleEUMigratedPlayers() {
         return message;
     });
 }
-// Add necessary empty web service for 'Render' deployment
-// Start the HTTP server in a separate worker thread
-const worker = new worker_threads_1.Worker(path_1.default.resolve(__dirname, './web.js'));
-worker.on('online', () => {
-    console.log('Server is running in the background on port 10000');
-});
-worker.on('exit', (code) => {
-    console.log(`Worker exited with code ${code}`);
-});
-// Render requires traffic at least every 15mn or the service will go to sleep
-// Start the background polling worker to keep Knightbot service running on Render
-const backgroundWorker = new worker_threads_1.Worker(path_1.default.resolve(__dirname, './polling.js'));
-backgroundWorker.on('online', () => {
-    console.log('Background polling worker started to query every 5 minutes');
-});
-backgroundWorker.on('exit', (code) => {
-    console.log(`Background worker exited with code ${code}`);
-});
 // Login to Discord
 client.login(BOT_TOKEN);
 // Invite:
