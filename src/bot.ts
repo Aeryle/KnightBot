@@ -1,6 +1,5 @@
 import { Client, Message, DiscordAPIError, Interaction, TextChannel  } from 'discord.js';
 import { DemoLoadBalancing, PhotonRunner, MAX_PLAYERS } from './app';
-import { Worker } from 'worker_threads';
 import path from 'path';
 
 const CHANNEL_ID = "1311233429572161556";
@@ -157,30 +156,6 @@ async function handleEUMigratedPlayers()
     message = `Migrated players: **${data.migrated}/${data.total}** (${percent} %)`;
     return message;
 }
-
-// Add necessary empty web service for 'Render' deployment
-// Start the HTTP server in a separate worker thread
-const worker = new Worker(path.resolve(__dirname, './web.js'));
-
-worker.on('online', () => {
-  console.log('Server is running in the background on port 10000');
-});
-
-worker.on('exit', (code) => {
-  console.log(`Worker exited with code ${code}`);
-});
-
-// Render requires traffic at least every 15mn or the service will go to sleep
-// Start the background polling worker to keep Knightbot service running on Render
-const backgroundWorker = new Worker(path.resolve(__dirname, './polling.js'));
-
-backgroundWorker.on('online', () => {
-  console.log('Background polling worker started to query every 5 minutes');
-});
-
-backgroundWorker.on('exit', (code) => {
-  console.log(`Background worker exited with code ${code}`);
-});
 
 // Login to Discord
 client.login(BOT_TOKEN);
