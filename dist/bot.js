@@ -165,9 +165,12 @@ function countClanTags() {
         TAG = "";
         const data = yield res.json();
         const taggedMembers = data.filter((member) => {
+            var _a, _b;
             const tagged = hasTag(member);
-            if (tagged)
+            if (tagged) {
+                TAG = ((_a = member.user.primary_guild) === null || _a === void 0 ? void 0 : _a.tag) || ((_b = member.user.clan) === null || _b === void 0 ? void 0 : _b.tag) || TAG;
                 console.log(`[+] Found tag user: ${member.user.username}`);
+            }
             return tagged;
         });
         const totalMembers = data.length;
@@ -195,9 +198,6 @@ function hasTag(member) {
     let clan = (_b = member === null || member === void 0 ? void 0 : member.user) === null || _b === void 0 ? void 0 : _b.clan;
     let usesTag = ((primaryGuild === null || primaryGuild === void 0 ? void 0 : primaryGuild.identity_guild_id) === GUILD_ID && (primaryGuild === null || primaryGuild === void 0 ? void 0 : primaryGuild.identity_enabled) === true) ||
         ((clan === null || clan === void 0 ? void 0 : clan.identity_guild_id) === GUILD_ID && (clan === null || clan === void 0 ? void 0 : clan.identity_enabled) === true);
-    // Init tag if not set. This ensures the tag is periodically updated.
-    if (usesTag && TAG === "")
-        TAG = (primaryGuild === null || primaryGuild === void 0 ? void 0 : primaryGuild.tag) || (clan === null || clan === void 0 ? void 0 : clan.tag) || TAG;
     return usesTag;
 }
 // Login to Discord

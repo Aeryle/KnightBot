@@ -29,7 +29,7 @@ const commands = [
         .setDescription('Display the (approximate) number of players who migrated from EU to NA after seeing KnightBot.'),
     new SlashCommandBuilder()
         .setName('tag')
-        .setDescription('Display the number of users using the "KNFBW" clan tag.'),
+        .setDescription('Display the number of users using Knightfall Biweekly clan tag.'),
 ].map(command => command.toJSON());
 
 // Register the slash commands

@@ -34,7 +34,7 @@ const commands = [
         .setDescription('Display the (approximate) number of players who migrated from EU to NA after seeing KnightBot.'),
     new discord_js_1.SlashCommandBuilder()
         .setName('tag')
-        .setDescription('Display the number of users using the "KNFBW" clan tag.'),
+        .setDescription('Display the number of users using Knightfall Biweekly clan tag.'),
 ].map(command => command.toJSON());
 // Register the slash commands
 const rest = new discord_js_1.REST({ version: '10' }).setToken(BOT_TOKEN);

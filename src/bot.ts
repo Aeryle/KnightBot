@@ -179,9 +179,13 @@ async function countClanTags() {
     TAG = "";
 
     const data = await res.json();
-    const taggedMembers = data.filter((member: { user: { username: any; }; }) => {
+    const taggedMembers = data.filter((member: { user: { primary_guild: { tag: any; }; clan: { tag: any; }; username: any; }; }) => {
         const tagged = hasTag(member);
-        if (tagged) console.log(`[+] Found tag user: ${member.user.username}`);
+        if (tagged)
+            {
+                TAG = member.user.primary_guild?.tag || member.user.clan?.tag || TAG;
+                console.log(`[+] Found tag user: ${member.user.username}`);
+            }
         return tagged;
     });
 
@@ -208,12 +212,9 @@ function hasTag(member: any) {
     // Both seem to have the same data. Let's check both to be sure.
     let primaryGuild = member?.user?.primary_guild;
     let clan = member?.user?.clan;
-
+    
     let usesTag = (primaryGuild?.identity_guild_id === GUILD_ID && primaryGuild?.identity_enabled === true) ||
         (clan?.identity_guild_id === GUILD_ID && clan?.identity_enabled === true);
-    
-    // Init tag if not set. This ensures the tag is periodically updated.
-    if (usesTag && TAG === "") TAG = primaryGuild?.tag || clan?.tag || TAG;
 
     return usesTag;
 }
