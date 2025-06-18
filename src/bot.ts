@@ -209,13 +209,13 @@ function hasTag(member: any) {
     let primaryGuild = member?.user?.primary_guild;
     let clan = member?.user?.clan;
 
+    let usesTag = (primaryGuild?.identity_guild_id === GUILD_ID && primaryGuild?.identity_enabled === true) ||
+        (clan?.identity_guild_id === GUILD_ID && clan?.identity_enabled === true);
+    
     // Init tag if not set. This ensures the tag is periodically updated.
-    if (TAG === "") TAG = primaryGuild?.tag || clan?.tag || TAG;
+    if (usesTag && TAG === "") TAG = primaryGuild?.tag || clan?.tag || TAG;
 
-    return (
-        (primaryGuild?.identity_guild_id === GUILD_ID && primaryGuild?.identity_enabled === true) ||
-        (clan?.identity_guild_id === GUILD_ID && clan?.identity_enabled === true)
-    );
+    return usesTag;
 }
 
 // Login to Discord
