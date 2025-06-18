@@ -188,7 +188,7 @@ async function countClanTags() {
     const totalMembers = data.length;
     const totalTagged = taggedMembers.length;
 
-    return `**${totalTagged}/${totalMembers}** KNFBW tag users.`;
+    return `**${totalTagged}/${totalMembers}** ${TAG} tag users.`;
 }
 
 async function fetchGuildMembers() {
