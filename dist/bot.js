@@ -193,11 +193,12 @@ function hasTag(member) {
     // Both seem to have the same data. Let's check both to be sure.
     let primaryGuild = (_a = member === null || member === void 0 ? void 0 : member.user) === null || _a === void 0 ? void 0 : _a.primary_guild;
     let clan = (_b = member === null || member === void 0 ? void 0 : member.user) === null || _b === void 0 ? void 0 : _b.clan;
+    let usesTag = ((primaryGuild === null || primaryGuild === void 0 ? void 0 : primaryGuild.identity_guild_id) === GUILD_ID && (primaryGuild === null || primaryGuild === void 0 ? void 0 : primaryGuild.identity_enabled) === true) ||
+        ((clan === null || clan === void 0 ? void 0 : clan.identity_guild_id) === GUILD_ID && (clan === null || clan === void 0 ? void 0 : clan.identity_enabled) === true);
     // Init tag if not set. This ensures the tag is periodically updated.
-    if (TAG === "")
+    if (usesTag && TAG === "")
         TAG = (primaryGuild === null || primaryGuild === void 0 ? void 0 : primaryGuild.tag) || (clan === null || clan === void 0 ? void 0 : clan.tag) || TAG;
-    return (((primaryGuild === null || primaryGuild === void 0 ? void 0 : primaryGuild.identity_guild_id) === GUILD_ID && (primaryGuild === null || primaryGuild === void 0 ? void 0 : primaryGuild.identity_enabled) === true) ||
-        ((clan === null || clan === void 0 ? void 0 : clan.identity_guild_id) === GUILD_ID && (clan === null || clan === void 0 ? void 0 : clan.identity_enabled) === true));
+    return usesTag;
 }
 // Login to Discord
 client.login(BOT_TOKEN);
