@@ -40,7 +40,7 @@ client.once('ready', () => __awaiter(void 0, void 0, void 0, function* () {
     KNIGHTFALL_GUILD = client.guilds.cache.get(GUILD_ID);
     if (!KNIGHTFALL_GUILD)
         console.error(`Guild ${GUILD_ID} not found ! Can't use /tag command.`);
-    // PhotonRunner.run();
+    app_1.PhotonRunner.run();
 }));
 // Slash commands
 client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0, function* () {
@@ -172,7 +172,7 @@ function countClanTags() {
         });
         const totalMembers = data.length;
         const totalTagged = taggedMembers.length;
-        return `**${totalTagged}/${totalMembers}** KNFBW tag users.`;
+        return `**${totalTagged}/${totalMembers}** ${TAG} tag users.`;
     });
 }
 function fetchGuildMembers() {
