@@ -17,7 +17,7 @@ if (!process.env.BOT_TOKEN || !process.env.BOT_CLIENT_ID) {
 const BOT_TOKEN = process.env.NODE_ENV === 'production' ? process.env.BOT_TOKEN || '' : process.env.DEV_BOT_TOKEN || '';
 const BOT_CLIENT_ID =  process.env.NODE_ENV === 'production' ? process.env.BOT_CLIENT_ID || '' : process.env.DEV_BOT_CLIENT_ID || '';
 
-console.log('NODE_ENV', process.env.NODE_ENV, 'Updating for bot with client ID:', BOT_CLIENT_ID, 'and token:', BOT_TOKEN);
+console.log(`[${process.env.NODE_ENV === 'production' ? 'PROD' : 'DEV'}] Updating commands for bot with client ID: ${BOT_CLIENT_ID}.`);
 
 // Define the slash command
 const commands = [
@@ -27,6 +27,9 @@ const commands = [
     new SlashCommandBuilder()
         .setName('eu')
         .setDescription('Display the (approximate) number of players who migrated from EU to NA after seeing KnightBot.'),
+    new SlashCommandBuilder()
+        .setName('tag')
+        .setDescription('Display the number of users using the "KNFBW" clan tag.'),
 ].map(command => command.toJSON());
 
 // Register the slash commands

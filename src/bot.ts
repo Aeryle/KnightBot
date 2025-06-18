@@ -1,8 +1,13 @@
-import { Client, Message, DiscordAPIError, Interaction, TextChannel  } from 'discord.js';
+import { Client, Message, DiscordAPIError, Interaction, TextChannel, Guild } from 'discord.js';
 import { DemoLoadBalancing, PhotonRunner, MAX_PLAYERS } from './app';
 import path from 'path';
 
 const CHANNEL_ID = "1311233429572161556";
+const GUILD_ID = "1224423183155728414"
+
+var KNIGHTFALL_GUILD: Guild | undefined;
+
+var TAG = "";
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
@@ -11,7 +16,7 @@ if (process.env.NODE_ENV !== 'production') {
         console.error('(DEV) Invalid bot token or client ID from ENV. Exiting...');
         process.exit(1);
     }
-  }
+}
 
 if (!process.env.BOT_TOKEN || !process.env.BOT_CLIENT_ID) {
     console.error('Invalid bot token or client ID from ENV. Exiting...');
@@ -22,7 +27,7 @@ const BOT_TOKEN = process.env.NODE_ENV === 'production' ? process.env.BOT_TOKEN 
 
 const cmdPrefix = '!';
 const client = new Client({
-    intents: ['GuildMessages', 'MessageContent', 'Guilds'],
+    intents: ['GuildMessages', 'MessageContent', 'Guilds', 'GuildMembers'],
 });
 
 client.once('ready', async () => {
@@ -31,6 +36,9 @@ client.once('ready', async () => {
     // Troll ThirdOne
     // const channel = await client.channels.fetch(CHANNEL_ID);
     // (channel as TextChannel).send('Is there a way to mute ThirdOne 🤓☝️');
+
+    KNIGHTFALL_GUILD = client.guilds.cache.get(GUILD_ID);
+    if (!KNIGHTFALL_GUILD) console.error(`Guild ${GUILD_ID} not found ! Can't use /tag command.`);
 
     PhotonRunner.run();
 });
@@ -49,6 +57,10 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     }
     else if (commandName === 'eu') {
         let message = await handleEUMigratedPlayers();
+        await respondSlash(interaction, message);
+    }
+    else if (commandName === 'tag') {
+        let message = await countClanTags();
         await respondSlash(interaction, message);
     }
 });
@@ -74,32 +86,25 @@ client.on('messageCreate', async (message: Message) => {
     }
 });
 
-async function respondSlash(interaction: any, response: string)
-{
+async function respondSlash(interaction: any, response: string) {
     // We have 3 seconds to respond
     // If we take too long, catch the 'Unknown interaction' error.
-    try
-    {
+    try {
         await interaction.reply(response);
     }
-    catch(e)
-    {
-        if (e instanceof DiscordAPIError)
-        {
+    catch (e) {
+        if (e instanceof DiscordAPIError) {
             console.warn("Took too long to respond (> 3 seconds). Can't respond anymore to the slash command");
         }
-        else
-        {
+        else {
             console.error("Couldn't reply to interaction. Unknown error:" + e);
         }
     }
 }
 
-function handleQueue()
-{
+function handleQueue() {
     var playersInQueue = DemoLoadBalancing.countOfPlayersInCurrentQueue;
-    if (playersInQueue == -1)
-    {
+    if (playersInQueue == -1) {
         return "_Couldn't fetch queue information. Please retry later._";
     }
 
@@ -107,32 +112,27 @@ function handleQueue()
     var waitingFor = `**${playersInQueue}/${MAX_PLAYERS}** players.`;
     var message = "_Something went wrong..._";
 
-    if (playersInQueue == 0 || remainingQueueTime <= -15)
-    {
+    if (playersInQueue == 0 || remainingQueueTime <= -15) {
         var message = "No active queue.";
     }
-    else if (remainingQueueTime > 0)
-    {
+    else if (remainingQueueTime > 0) {
         message = `${waitingFor} Starting in **${remainingQueueTime} seconds**...`;
     }
-    else if (remainingQueueTime <= 0 && remainingQueueTime >= - 15)
-    {
+    else if (remainingQueueTime <= 0 && remainingQueueTime >= - 15) {
         message = `${waitingFor} Starting now...`;
     }
 
     return message;
 }
 
-function handlePlayers()
-{
+function handlePlayers() {
     var activePlayers = DemoLoadBalancing.playersInGameOrQueue;
     var message = `Active players: **${activePlayers}**`;
 
     return message;
 }
 
-async function handleEUMigratedPlayers()
-{
+async function handleEUMigratedPlayers() {
     const URL = "http://129.80.252.248:5000/migration";
     const response = await fetch(URL);
 
@@ -157,6 +157,67 @@ async function handleEUMigratedPlayers()
     return message;
 }
 
+async function countClanTags() {
+    // Make sure the guild is fetched
+    if (!KNIGHTFALL_GUILD) {
+        console.error("Guild not found");
+        return "Something went wrong... Please try again later."
+    }
+
+    // Can't use discord.js to fetch members with cache improvements
+    // because members objects do not contain the clan tag information.
+    // await KNIGHTFALL_GUILD.members.fetch();
+    // const memberList = Array.from(KNIGHTFALL_GUILD.members.cache.values());
+
+    const res = await fetchGuildMembers();
+
+    if (!res.ok) {
+        console.error(`Error fetching user data for guild ${GUILD_ID}. Status: ${res.status}`);
+        return "Something went wrong... Please try again later.";
+    }
+
+    TAG = "";
+
+    const data = await res.json();
+    const taggedMembers = data.filter((member: { user: { username: any; }; }) => {
+        const tagged = hasTag(member);
+        if (tagged) console.log(`[+] Found tag user: ${member.user.username}`);
+        return tagged;
+    });
+
+    const totalMembers = data.length;
+    const totalTagged = taggedMembers.length;
+
+    return `**${totalTagged}/${totalMembers}** KNFBW tag users.`;
+}
+
+async function fetchGuildMembers() {
+    const res = await fetch(`https://discord.com/api/guilds/${GUILD_ID}/members?limit=1000`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bot ${process.env.BOT_TOKEN}`,
+            "Content-Type": "application/json"
+        }
+    });
+
+    return res;
+}
+
+function hasTag(member: any) {
+    // Not sure about the difference betweeen "primary_guild" and "clan".
+    // Both seem to have the same data. Let's check both to be sure.
+    let primaryGuild = member?.user?.primary_guild;
+    let clan = member?.user?.clan;
+
+    // Init tag if not set. This ensures the tag is periodically updated.
+    if (TAG === "") TAG = primaryGuild?.tag || clan?.tag || TAG;
+
+    return (
+        (primaryGuild?.identity_guild_id === GUILD_ID && primaryGuild?.identity_enabled === true) ||
+        (clan?.identity_guild_id === GUILD_ID && clan?.identity_enabled === true)
+    );
+}
+
 // Login to Discord
 client.login(BOT_TOKEN);
 
@@ -166,3 +227,6 @@ client.login(BOT_TOKEN);
 // Deployment:
 // https://railway.app/project/92b2c5d9-d055-4a9a-8bc7-509e41808700
 // https://dashboard.render.com/web/srv-d0kroebe5dus73c1q6cg/deploys/dep-d0kroeje5dus73c1q6o0
+
+// git push evennode evennode:main
+// https://admin.evennode.com/a/d/knightbot/info

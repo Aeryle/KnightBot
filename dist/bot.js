@@ -12,6 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const app_1 = require("./app");
 const CHANNEL_ID = "1311233429572161556";
+const GUILD_ID = "1224423183155728414";
+var KNIGHTFALL_GUILD;
+var TAG = "";
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
     if (!process.env.DEV_BOT_TOKEN || !process.env.DEV_BOT_CLIENT_ID) {
@@ -26,7 +29,7 @@ if (!process.env.BOT_TOKEN || !process.env.BOT_CLIENT_ID) {
 const BOT_TOKEN = process.env.NODE_ENV === 'production' ? process.env.BOT_TOKEN || '' : process.env.DEV_BOT_TOKEN || '';
 const cmdPrefix = '!';
 const client = new discord_js_1.Client({
-    intents: ['GuildMessages', 'MessageContent', 'Guilds'],
+    intents: ['GuildMessages', 'MessageContent', 'Guilds', 'GuildMembers'],
 });
 client.once('ready', () => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -34,7 +37,10 @@ client.once('ready', () => __awaiter(void 0, void 0, void 0, function* () {
     // Troll ThirdOne
     // const channel = await client.channels.fetch(CHANNEL_ID);
     // (channel as TextChannel).send('Is there a way to mute ThirdOne 🤓☝️');
-    app_1.PhotonRunner.run();
+    KNIGHTFALL_GUILD = client.guilds.cache.get(GUILD_ID);
+    if (!KNIGHTFALL_GUILD)
+        console.error(`Guild ${GUILD_ID} not found ! Can't use /tag command.`);
+    // PhotonRunner.run();
 }));
 // Slash commands
 client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0, function* () {
@@ -49,6 +55,10 @@ client.on('interactionCreate', (interaction) => __awaiter(void 0, void 0, void 0
     }
     else if (commandName === 'eu') {
         let message = yield handleEUMigratedPlayers();
+        yield respondSlash(interaction, message);
+    }
+    else if (commandName === 'tag') {
+        let message = yield countClanTags();
         yield respondSlash(interaction, message);
     }
 }));
@@ -136,6 +146,59 @@ function handleEUMigratedPlayers() {
         return message;
     });
 }
+function countClanTags() {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Make sure the guild is fetched
+        if (!KNIGHTFALL_GUILD) {
+            console.error("Guild not found");
+            return "Something went wrong... Please try again later.";
+        }
+        // Can't use discord.js to fetch members with cache improvements
+        // because members objects do not contain the clan tag information.
+        // await KNIGHTFALL_GUILD.members.fetch();
+        // const memberList = Array.from(KNIGHTFALL_GUILD.members.cache.values());
+        const res = yield fetchGuildMembers();
+        if (!res.ok) {
+            console.error(`Error fetching user data for guild ${GUILD_ID}. Status: ${res.status}`);
+            return "Something went wrong... Please try again later.";
+        }
+        TAG = "";
+        const data = yield res.json();
+        const taggedMembers = data.filter((member) => {
+            const tagged = hasTag(member);
+            if (tagged)
+                console.log(`[+] Found tag user: ${member.user.username}`);
+            return tagged;
+        });
+        const totalMembers = data.length;
+        const totalTagged = taggedMembers.length;
+        return `**${totalTagged}/${totalMembers}** KNFBW tag users.`;
+    });
+}
+function fetchGuildMembers() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const res = yield fetch(`https://discord.com/api/guilds/${GUILD_ID}/members?limit=1000`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bot ${process.env.BOT_TOKEN}`,
+                "Content-Type": "application/json"
+            }
+        });
+        return res;
+    });
+}
+function hasTag(member) {
+    var _a, _b;
+    // Not sure about the difference betweeen "primary_guild" and "clan".
+    // Both seem to have the same data. Let's check both to be sure.
+    let primaryGuild = (_a = member === null || member === void 0 ? void 0 : member.user) === null || _a === void 0 ? void 0 : _a.primary_guild;
+    let clan = (_b = member === null || member === void 0 ? void 0 : member.user) === null || _b === void 0 ? void 0 : _b.clan;
+    // Init tag if not set. This ensures the tag is periodically updated.
+    if (TAG === "")
+        TAG = (primaryGuild === null || primaryGuild === void 0 ? void 0 : primaryGuild.tag) || (clan === null || clan === void 0 ? void 0 : clan.tag) || TAG;
+    return (((primaryGuild === null || primaryGuild === void 0 ? void 0 : primaryGuild.identity_guild_id) === GUILD_ID && (primaryGuild === null || primaryGuild === void 0 ? void 0 : primaryGuild.identity_enabled) === true) ||
+        ((clan === null || clan === void 0 ? void 0 : clan.identity_guild_id) === GUILD_ID && (clan === null || clan === void 0 ? void 0 : clan.identity_enabled) === true));
+}
 // Login to Discord
 client.login(BOT_TOKEN);
 // Invite:
@@ -143,3 +206,5 @@ client.login(BOT_TOKEN);
 // Deployment:
 // https://railway.app/project/92b2c5d9-d055-4a9a-8bc7-509e41808700
 // https://dashboard.render.com/web/srv-d0kroebe5dus73c1q6cg/deploys/dep-d0kroeje5dus73c1q6o0
+// git push evennode evennode:main
+// https://admin.evennode.com/a/d/knightbot/info
