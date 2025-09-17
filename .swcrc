@@ -1,18 +1,19 @@
 {
-	"$schema": "https://swc.rs/schema.json",
-	"jsc": {
-		"parser": {
-			"syntax": "typescript",
-			"decorators": true
-		},
-		"target": "es2020",
-		"paths": {
-			"$lib/*": ["./lib/*"]
-		},
-		"baseUrl": "./src"
-	},
-	"module": {
-		"type": "es6",
-		"resolveFully": true
-	}
+  "$schema": "https://swc.rs/schema.json",
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "decorators": true
+    },
+    "target": "es2020",
+    "paths": {
+      "$lib/*": ["./lib/*"]
+    },
+    "baseUrl": "./src"
+  },
+  "module": {
+    "type": "es6",
+    "resolveFully": true,
+    "preserveImportMeta": true
+  }
 }

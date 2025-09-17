@@ -10,6 +10,7 @@ import '@sapphire/plugin-logger/register'
 import '@sapphire/plugin-subcommands/register'
 import { setup, type ArrayString } from '@skyra/env-utilities'
 import * as colorette from 'colorette'
+import { Snowflake } from 'discord.js'
 
 import { rootDir } from './constants'
 
@@ -28,5 +29,10 @@ colorette.createColors({ useColor: true })
 declare module '@skyra/env-utilities' {
   interface Env {
     OWNERS: ArrayString
+
+    PHOTON_APP_ID: string
+    PHOTON_APP_VERSION: string
+
+    BOT_CHANNEL_ID: Snowflake
   }
 }

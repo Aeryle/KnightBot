@@ -4,6 +4,7 @@ import type { StoreRegistryValue } from '@sapphire/pieces'
 import { blue, gray, green, magenta, magentaBright, white, yellow } from 'colorette'
 
 import { dev } from '$lib/constants'
+import '$lib/queue-detector'
 
 @ApplyOptions<Listener.Options>({ once: true })
 export class UserEvent extends Listener {

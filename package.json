@@ -33,7 +33,8 @@
     "npm-run-all2": "7.0.2",
     "prettier": "3.4.2",
     "tsc-watch": "6.3.0",
-    "typescript": "~5.4.5"
+    "typescript": "~5.4.5",
+    "typia": "9.7.2"
   },
   "scripts": {
     "sapphire": "sapphire",
