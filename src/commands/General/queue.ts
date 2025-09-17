@@ -30,7 +30,7 @@ export class QueueCommand extends Command {
   }
 
   override async chatInputRun(interaction: ChatInputCommandInteraction) {
-    const region = (interaction.options.getString('region') ?? Regions.NA) as keyof typeof queueDetectors
+    const region = (interaction.options.getString('region') ?? 'NA') as keyof typeof queueDetectors
     const queueDetector = queueDetectors[region]
 
     const inGameOrQueue = queueDetector.players.inGameOrQueue ?? 0
