@@ -84,6 +84,7 @@ export class QueueDetector extends Photon.LoadBalancing.LoadBalancingClient {
     if (roomsRemoved.length) {
       for (const room of roomsRemoved) {
         this.potentiallyBuggedQueues = this.potentiallyBuggedQueues.filter(queue => queue !== room.name)
+
         if (this.currentQueue?.name === room.name) this.currentQueue = null
       }
     }
