@@ -56,9 +56,9 @@ export class QueueCommand extends Command {
     if (players < 4) return Colors.DarkRed
     if (players < 28) return Colors.Red
     if (players < 56) return Colors.DarkOrange
-    if (players < 78) return Colors.Orange
-    if (players < 104) return Colors.DarkGreen
-    if (players < 130) return Colors.Green
+    if (players < 84) return Colors.Orange
+    if (players < 112) return Colors.DarkGreen
+    if (players < 140) return Colors.Green
 
     return Colors.Gold
   }
