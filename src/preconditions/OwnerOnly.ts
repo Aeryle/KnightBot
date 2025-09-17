@@ -20,7 +20,7 @@ export class UserPrecondition extends AllFlowsPrecondition {
   }
 
   private doOwnerCheck(userId: Snowflake) {
-    return OWNERS.includes(userId) ? this.ok() : this.error({ message: this.#message })
+    return OWNERS.includes(userId) ? this.ok() : this.error({ message: this.#message, context: { silent: true } })
   }
 }
 
