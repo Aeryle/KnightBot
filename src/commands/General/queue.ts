@@ -4,7 +4,7 @@ import { objectKeys } from '@sapphire/utilities'
 import { bold, ChatInputCommandInteraction, Colors, EmbedBuilder, MessageFlags } from 'discord.js'
 
 import { dev } from '$lib/constants'
-import { queueDetectors, Regions } from '$lib/queue-detector'
+import { queueDetectors } from '$lib/queue-detector'
 
 @ApplyOptions<Command.Options>({
   name: 'queue',
@@ -33,7 +33,7 @@ export class QueueCommand extends Command {
     const region = (interaction.options.getString('region') ?? 'NA') as keyof typeof queueDetectors
     const queueDetector = queueDetectors[region]
 
-    const inGameOrQueue = queueDetector.players.inGameOrQueue ?? 0
+    const inGameOrQueue = queueDetector.players.inGameOrQueue
 
     const description = [`${bold('Active players')}: ${inGameOrQueue}`]
     if (queueDetector.currentQueue) {
@@ -47,7 +47,11 @@ export class QueueCommand extends Command {
     const embed = new EmbedBuilder()
       .setColor(this.getColor(inGameOrQueue))
       .setTitle(`${region} queue`)
-      .setDescription(description.join('\n'))
+      .setDescription(
+        queueDetector.players.inGameOrQueue < 1 //
+          ? bold(`No players in ${region}`)
+          : description.join('\n')
+      )
 
     interaction.reply({ embeds: [embed], flags: dev ? [MessageFlags.Ephemeral] : [] })
   }
