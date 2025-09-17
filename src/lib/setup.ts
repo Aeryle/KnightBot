@@ -8,7 +8,7 @@ import { ApplicationCommandRegistries, RegisterBehavior } from '@sapphire/framew
 import '@sapphire/plugin-editable-commands/register'
 import '@sapphire/plugin-logger/register'
 import '@sapphire/plugin-subcommands/register'
-import { setup, type ArrayString } from '@skyra/env-utilities'
+import { setup, type ArrayString, type NumberString } from '@skyra/env-utilities'
 import * as colorette from 'colorette'
 import { Snowflake } from 'discord.js'
 
@@ -32,6 +32,8 @@ declare module '@skyra/env-utilities' {
 
     PHOTON_APP_ID: string
     PHOTON_APP_VERSION: string
+    PHOTON_MAX_PLAYERS: NumberString
+    PHOTON_QUEUE_TIMER: NumberString
 
     BOT_CHANNEL_ID: Snowflake
   }
