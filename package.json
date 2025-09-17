@@ -25,7 +25,6 @@
     "@sapphire/ts-config": "5.0.1",
     "@swc/cli": "0.6.0",
     "@swc/core": "1.10.8",
-    "@types/bun": "1.2.22",
     "@types/node": "22.10.7",
     "@types/ws": "8.5.13",
     "chokidar": "4.0.3",
