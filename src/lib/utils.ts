@@ -14,15 +14,15 @@ import { type APIUser, type Guild, type User } from 'discord.js'
  * @example
  * const randomEntry = pickRandom([1, 2, 3, 4]) // 1
  */
-export function pickRandom<T>(array: readonly T[]): T {
+export const pickRandom = <T>(array: readonly T[]): T => {
   const { length } = array
 
   return array[Math.floor(Math.random() * length)]
 }
 
-export function logSuccessCommand(
+export const logSuccessCommand = (
   payload: ContextMenuCommandSuccessPayload | ChatInputCommandSuccessPayload | MessageCommandSuccessPayload
-): void {
+) => {
   let successLoggerData: ReturnType<typeof getSuccessLoggerData>
 
   if ('interaction' in payload) {
@@ -45,19 +45,23 @@ export function getSuccessLoggerData(guild: Guild | null, user: User, command: C
   return { shard, commandName, author, sentAt }
 }
 
-function getShardInfo(id: number) {
+const getShardInfo = (id: number) => {
   return `[${cyan(id.toString())}]`
 }
 
-function getCommandInfo(command: Command) {
+const getCommandInfo = (command: Command) => {
   return cyan(command.name)
 }
 
-function getAuthorInfo(author: User | APIUser) {
+const getAuthorInfo = (author: User | APIUser) => {
   return `${author.username}[${cyan(author.id)}]`
 }
 
-function getGuildInfo(guild: Guild | null) {
+const getGuildInfo = (guild: Guild | null) => {
   if (guild === null) return 'Direct Messages'
   return `${guild.name}[${cyan(guild.id)}]`
+}
+
+export function toFixed(value: number) {
+  return parseFloat(value.toFixed(2))
 }

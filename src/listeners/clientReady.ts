@@ -10,9 +10,13 @@ import '$lib/queue-detector'
 export class UserEvent extends Listener {
   private readonly style = dev ? yellow : blue
 
-  public override run() {
+  public override async run() {
     this.printBanner()
     this.printStoreDebugInformation()
+
+    for (const guild of this.container.client.guilds.cache.values()) {
+      await guild.members.fetch()
+    }
   }
 
   private printBanner() {
