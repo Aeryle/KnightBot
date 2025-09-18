@@ -43,7 +43,7 @@ export class QueueCommand extends Command {
       const timer = queueTimer - startedFor
 
       description.push(
-        `${bold('Active queue')}: ${bold(queueDetector.currentQueue.players.toString())}/${bold(maxPlayers.toString())}. Starting in ${bold(timer.toString())} seconds...`
+        `${bold(queueDetector.currentQueue.players.toString())}/${bold(maxPlayers.toString())}. Starting in ${bold(timer.toString())} seconds...`
       )
     } else description.push('No active queue.')
 
