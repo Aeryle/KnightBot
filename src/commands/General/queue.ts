@@ -21,10 +21,11 @@ export class QueueCommand extends Command {
       return builder
         .setName(this.name)
         .setDescription(this.description)
-
         .addStringOption(builder => {
-          builder = builder.setName('region').setDescription('Select which region to see the queue of.')
-          for (const name of objectKeys(queueDetectors)) builder = builder.addChoices({ name, value: name })
+          builder = builder
+            .setName('region')
+            .setDescription('Select which region to see the queue of.')
+            .addChoices(objectKeys(queueDetectors).map(name => ({ name, value: name })))
 
           return builder
         })
