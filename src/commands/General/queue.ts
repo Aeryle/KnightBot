@@ -35,23 +35,24 @@ export class QueueCommand extends Command {
   override async chatInputRun(interaction: ChatInputCommandInteraction) {
     const region = (interaction.options.getString('region') ?? 'NA') as keyof typeof queueDetectors
     const queueDetector = queueDetectors[region]
-    const inGameOrQueue = queueDetector.players.inGameOrQueue
+    const inGameOrQueue = queueDetector.players.active
 
     const description = [`Active players: ${bold(inGameOrQueue.toString())}`]
     if (queueDetector.currentQueue) {
       const startedFor = Math.floor((Date.now() - queueDetector.currentQueue.timer) / 1_000)
       const timer = queueTimer - startedFor
+      const isDelayed = Math.sign(timer) === -1
+      const currentPlayers = `${bold(queueDetector.currentQueue.players.toString())}/${bold(maxPlayers.toString())}.`
+      const startMessage = isDelayed ? 'Starting now...' : `Starting in ${bold(timer.toString())} seconds...`
 
-      description.push(
-        `${bold(queueDetector.currentQueue.players.toString())}/${bold(maxPlayers.toString())}. Starting in ${bold(timer.toString())} seconds...`
-      )
+      description.push(`${currentPlayers} ${startMessage}`)
     } else description.push('No active queue.')
 
     const embed = new EmbedBuilder()
       .setColor(this.getColor(inGameOrQueue))
       .setFooter({ text: `Region: ${region}` })
       .setDescription(
-        queueDetector.players.inGameOrQueue < 1 //
+        queueDetector.players.active < 1 //
           ? bold(`No players in ${region}`)
           : description.join('\n')
       )
