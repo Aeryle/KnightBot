@@ -22,7 +22,7 @@ export class QueueDetector extends Photon.LoadBalancing.LoadBalancingClient {
   override logger: Photon.Logger
 
   totalGames?: number
-  players = { inGameOrQueue: -1 }
+  players = { active: -1 }
   currentQueue?: Queue | null
   hasQueueConflict = false
   potentiallyBuggedQueues: string[] = []
@@ -41,13 +41,9 @@ export class QueueDetector extends Photon.LoadBalancing.LoadBalancingClient {
     })
   }
 
-  override onAppStats(errorCode: number, errorMsg: string, stats: Record<string, string>) {
-    /** Count of players currently online on Game servers. */
-    const peers = parseInt(stats.peerCount) - 1 // Remove 1 since we are not an actual player
-    // /** Count of players on Master server (looking for game). */
-    // const masterPeers = parseInt(stats.peerCount)
-
-    this.players = { inGameOrQueue: peers }
+  override onAppStats(_errorCode: number, _errorMsg: string, stats: Record<string, string>) {
+    // `stats.PeerCount` gets the count of all active players
+    this.players = { active: parseInt(stats.peerCount) }
   }
 
   override onRoomListUpdate(
@@ -60,7 +56,7 @@ export class QueueDetector extends Photon.LoadBalancing.LoadBalancingClient {
 
     for (const room of rooms) {
       if (!this.currentQueue?.name && room.isOpen) {
-        this.setNewCurrentQueue(room)
+        this.setCurrentQueue(room)
         break
       } else if (this.currentQueue?.name === room.name) {
         this.currentQueue.players = room.playerCount
@@ -68,29 +64,26 @@ export class QueueDetector extends Photon.LoadBalancing.LoadBalancingClient {
       }
     }
 
-    if (roomsAdded.length === 1) this.setNewCurrentQueue(roomsAdded[0])
+    if (roomsAdded.length === 1) this.setCurrentQueue(roomsAdded[0])
     else if (roomsAdded.length > 1) {
       this.logger.warn('More than 1 room is open. This should not happen')
 
       const mostFilledRoom = roomsAdded.reduce((previous, current) => {
         return previous.playerCount > current.playerCount ? previous : current
       })
-      this.setNewCurrentQueue(mostFilledRoom)
+      this.setCurrentQueue(mostFilledRoom)
 
-      this.hasQueueConflict = true
       for (const room of roomsAdded) this.potentiallyBuggedQueues.push(room.name)
     }
 
     if (roomsRemoved.length) {
       for (const room of roomsRemoved) {
-        this.potentiallyBuggedQueues = this.potentiallyBuggedQueues.filter(queue => queue !== room.name)
-
         if (this.currentQueue?.name === room.name) this.currentQueue = null
       }
     }
   }
 
-  private setNewCurrentQueue({ name, playerCount }: Photon.LoadBalancing.RoomInfo) {
+  private setCurrentQueue({ name, playerCount }: Photon.LoadBalancing.RoomInfo) {
     this.currentQueue = {
       name: name,
       players: playerCount,
