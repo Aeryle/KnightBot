@@ -54,16 +54,6 @@ export class QueueDetector extends Photon.LoadBalancing.LoadBalancingClient {
   ) {
     this.logger.debug('Rooms updated:', rooms.length, rooms[0]?.name, roomsUpdated, roomsAdded, roomsRemoved)
 
-    for (const room of rooms) {
-      if (!this.currentQueue?.name && room.isOpen) {
-        this.setCurrentQueue(room)
-        break
-      } else if (this.currentQueue?.name === room.name) {
-        this.currentQueue.players = room.playerCount
-        break
-      }
-    }
-
     if (roomsAdded.length === 1) this.setCurrentQueue(roomsAdded[0])
     else if (roomsAdded.length > 1) {
       this.logger.warn('More than 1 room is open. This should not happen')
@@ -74,6 +64,16 @@ export class QueueDetector extends Photon.LoadBalancing.LoadBalancingClient {
       this.setCurrentQueue(mostFilledRoom)
 
       for (const room of roomsAdded) this.potentiallyBuggedQueues.push(room.name)
+    }
+
+    for (const room of rooms) {
+      if (!this.currentQueue?.name && room.isOpen) {
+        this.setCurrentQueue(room)
+        break
+      } else if (this.currentQueue?.name === room.name) {
+        this.currentQueue.players = room.playerCount
+        break
+      }
     }
 
     if (roomsRemoved.length) {
