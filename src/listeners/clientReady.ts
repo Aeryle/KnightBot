@@ -1,9 +1,12 @@
 import { ApplyOptions } from '@sapphire/decorators'
 import { Listener } from '@sapphire/framework'
 import type { StoreRegistryValue } from '@sapphire/pieces'
+import { envParseString } from '@skyra/env-utilities'
 import { blue, gray, green, magenta, magentaBright, white, yellow } from 'colorette'
+import { ActivityType } from 'discord.js'
 
 import { dev } from '$lib/constants'
+
 import '$lib/queue-detector'
 
 @ApplyOptions<Listener.Options>({ once: true })
@@ -17,6 +20,8 @@ export class UserEvent extends Listener {
     for (const guild of this.container.client.guilds.cache.values()) {
       await guild.members.fetch()
     }
+
+    this.setActivity()
   }
 
   private printBanner() {
@@ -52,5 +57,12 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 
   private styleStore(store: StoreRegistryValue, last: boolean) {
     return gray(`${last ? '└─' : '├─'} Loaded ${this.style(store.size.toString().padEnd(3, ' '))} ${store.name}.`)
+  }
+
+  private setActivity() {
+    this.container.client.user?.setActivity({
+      type: ActivityType.Watching,
+      name: `${envParseString('GAME_NAME')}'s queues`,
+    })
   }
 }
