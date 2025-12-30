@@ -13,16 +13,11 @@ import { dev } from '$lib/constants'
 })
 export class PingTestersCommand extends Command {
   public override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand(
-      builder =>
-        builder //
-          .setName(this.name)
-          .setDescription(this.description)
-          .setContexts(InteractionContextType.Guild)
-      // {
-      //   guildIds: dev ? [envParseString('BOT_GUILD_ID')] : undefined,
-      //   behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
-      // }
+    registry.registerChatInputCommand(builder =>
+      builder //
+        .setName(this.name)
+        .setDescription(this.description)
+        .setContexts(InteractionContextType.Guild)
     )
   }
 
