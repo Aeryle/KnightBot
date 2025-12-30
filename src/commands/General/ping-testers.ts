@@ -1,9 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators'
 import { Command } from '@sapphire/framework'
 import { envParseString } from '@skyra/env-utilities'
-import { InteractionContextType, MessageFlags } from 'discord.js'
-
-import { dev } from '$lib/constants'
+import { InteractionContextType } from 'discord.js'
 
 @ApplyOptions<Command.Options>({
   name: 'ping-testers',
@@ -26,7 +24,10 @@ export class PingTestersCommand extends Command {
 
     return interaction.reply({
       content: `<@&${envParseString('MOD_TESTER_ROLE_ID')}>`,
-      flags: dev ? MessageFlags.Ephemeral : [],
+      // flags: dev ? MessageFlags.Ephemeral : [],
+      allowedMentions: {
+        roles: [envParseString('MOD_TESTER_ROLE_ID')],
+      },
     })
   }
 }
