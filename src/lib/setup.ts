@@ -35,8 +35,12 @@ declare module '@skyra/env-utilities' {
     PHOTON_MAX_PLAYERS: NumberString
     PHOTON_QUEUE_TIMER: NumberString
 
+    BOT_GUILD_ID: Snowflake
     BOT_CHANNEL_ID: Snowflake
 
     GAME_NAME: string
+
+    VERIFIED_MODDER_ROLE_ID: string
+    MOD_TESTER_ROLE_ID: string
   }
 }

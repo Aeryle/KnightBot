@@ -3,6 +3,8 @@ import './lib/setup'
 import { LogLevel, SapphireClient } from '@sapphire/framework'
 import { GatewayIntentBits, Partials } from 'discord.js'
 
+import { dev } from '$lib/constants'
+
 const client = new SapphireClient({
   defaultPrefix: '!',
   regexPrefix: /^(hey +)?bot[,! ]/i,
@@ -31,6 +33,9 @@ try {
   client.logger.info('Logging in')
   await client.login()
   client.logger.info('Logged in')
+
+  if (dev) {
+  }
 } catch (error) {
   client.logger.fatal(error)
   await client.destroy()
